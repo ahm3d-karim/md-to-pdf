@@ -1,0 +1,310 @@
+/* Markdown to PDF (LaTeX) - styles
+   Palette shared with pdf-to-md: paper + ink + one rust accent.
+   Preview sheet mimics a LaTeX article page: Computer Modern (KaTeX fonts),
+   numbered sections, A4 proportions, 1in-style margins. */
+
+:root {
+  --paper: #f7f5f0;
+  --paper-raised: #ffffff;
+  --ink: #23201c;
+  --ink-soft: #5b564e;
+  --line: #d9d4c9;
+  --accent: #a03d1e;
+  --accent-ink: #ffffff;
+  --focus: #c25733;
+  --code-bg: #efece4;
+  --sheet-bg: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  --paper: #16150f;
+  --paper-raised: #1f1d17;
+  --ink: #e8e3d8;
+  --ink-soft: #a49d8f;
+  --line: #3a362c;
+  --accent: #d96a41;
+  --accent-ink: #16150f;
+  --focus: #e08a5f;
+  --code-bg: #2a271f;
+}
+
+/* In dark mode the sheet stays paper-white: it is the printed page. */
+:root[data-theme="dark"] .sheet {
+  --sheet-bg: #ffffff;
+  --sheet-ink: #1a1a1a;
+  --sheet-line: #cccccc;
+  --sheet-code: #f2f2f2;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+
+.brand-mark {
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-ink);
+  background: var(--accent);
+  padding: 5px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+h1 { font-size: 19px; font-weight: 700; margin: 0; }
+
+.brand-sub { font-size: 13px; color: var(--ink-soft); }
+
+.top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.primary-btn {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  font-weight: 700;
+}
+
+.primary-btn:hover { filter: brightness(1.08); }
+
+.ghost-btn {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Workspace */
+.workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 42%) 1fr;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; grid-template-rows: 40% 60%; }
+}
+
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+  background: var(--paper-raised);
+  padding: 16px 18px;
+  min-height: 0;
+}
+
+@media (max-width: 900px) { .editor-pane { border-right: none; border-bottom: 1px solid var(--line); } }
+
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 18px;
+  background: var(--paper);
+}
+
+.pane-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+}
+
+#editor {
+  flex: 1;
+  resize: none;
+  width: 100%;
+  min-height: 200px;
+  padding: 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+#editor:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Preview scroll area */
+.scroll-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 26px 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+/* The sheet: a printed page */
+.sheet {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 14mm 16mm;
+  background: var(--sheet-bg, #ffffff);
+  color: var(--sheet-ink, #1a1a1a);
+  font-family: "KaTeX_Main", "Times New Roman", Georgia, serif;
+  font-size: 11.5pt;
+  line-height: 1.5;
+  text-align: justify;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  word-wrap: break-word;
+}
+
+/* LaTeX-style section counters */
+.sheet { counter-reset: sec subsec; }
+
+.sheet h1 {
+  font-size: 16pt;
+  font-weight: 700;
+  margin: 0.9em 0 0.5em;
+  counter-reset: subsec;
+  counter-increment: sec;
+}
+
+.sheet h1::before { content: counter(sec) "\2002\2002"; }
+
+.sheet h2 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  margin: 0.8em 0 0.45em;
+  counter-increment: subsec;
+}
+
+.sheet h2::before { content: counter(sec) "." counter(subsec) "\2002\2002"; }
+
+.sheet h3 { font-size: 12pt; font-weight: 700; margin: 0.7em 0 0.4em; }
+.sheet h4 { font-size: 11.5pt; font-weight: 700; font-style: italic; margin: 0.6em 0 0.35em; }
+
+.sheet p { margin: 0.55em 0; }
+
+.sheet ul, .sheet ol { margin: 0.5em 0; padding-left: 1.6em; }
+.sheet li { margin: 0.18em 0; }
+
+.sheet blockquote {
+  margin: 0.6em 1.2em;
+  color: #444444;
+  font-style: italic;
+}
+
+.sheet a { color: #1a4e8a; text-decoration: none; }
+.sheet a:hover { text-decoration: underline; }
+
+.sheet code {
+  font-family: "KaTeX_Mono", "Courier New", monospace;
+  font-size: 0.86em;
+  background: var(--sheet-code, #f2f2f2);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.sheet pre {
+  font-family: "KaTeX_Mono", "Courier New", monospace;
+  font-size: 0.84em;
+  background: var(--sheet-code, #f2f2f2);
+  padding: 10px 12px;
+  border-radius: 3px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.sheet pre code { background: none; padding: 0; }
+
+.sheet table {
+  border-collapse: collapse;
+  margin: 0.7em auto;
+  width: auto;
+}
+
+.sheet th, .sheet td {
+  border: 1px solid var(--sheet-line, #cccccc);
+  padding: 5px 10px;
+  text-align: left;
+  font-size: 10.5pt;
+}
+
+.sheet th { font-weight: 700; }
+
+.sheet hr { border: none; border-top: 0.5pt solid var(--sheet-line, #cccccc); margin: 1.2em 0; }
+
+.sheet img { max-width: 100%; }
+
+/* KaTeX display math should not justify-text-align */
+.sheet .katex-display { text-align: center; margin: 0.7em 0; }
+
+/* Foot */
+.foot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.foot p { margin: 0; }
+
+/* Print: only the sheet, A4 with LaTeX-like margins */
+@page { size: A4; margin: 25mm 28mm; }
+
+@media print {
+  body { background: #ffffff; }
+  .topbar, .editor-pane, .foot { display: none !important; }
+  .preview-pane { padding: 0; background: #ffffff; }
+  .scroll-wrap { overflow: visible; border: none; padding: 0; background: #ffffff; }
+  .sheet {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    font-size: 11.5pt;
+  }
+  .sheet a { color: #000000; }
+  .sheet blockquote { color: #000000; }
+  .sheet pre, .sheet code { background: #ffffff; }
+  h1, h2, h3, h4, p, li, blockquote, table, pre, .katex-display { page-break-inside: avoid; }
+  h1, h2, h3, h4 { page-break-after: avoid; }
+}

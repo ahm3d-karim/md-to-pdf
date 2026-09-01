@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown to PDF (LaTeX)</title>
+<meta name="description" content="Write Markdown, get a LaTeX-typeset PDF: Computer Modern, numbered sections, KaTeX math. Generated in your browser.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">M&#8594;P</span>
+    <h1>Markdown to PDF</h1>
+    <span class="brand-sub">LaTeX typesetting, in your browser</span>
+  </div>
+  <div class="top-actions">
+    <button id="sample-btn" class="ghost-btn" type="button">Load sample</button>
+    <button id="clear-btn" class="ghost-btn" type="button">Clear</button>
+    <button id="tex-btn" class="ghost-btn" type="button">Download .tex</button>
+    <button id="pdf-btn" class="primary-btn" type="button">Download PDF</button>
+    <button id="theme-toggle" class="ghost-btn" type="button" aria-label="Switch color theme">Light / Dark</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <section class="editor-pane" aria-labelledby="editor-heading">
+    <h2 id="editor-heading" class="pane-title">Markdown</h2>
+    <textarea id="editor" spellcheck="false" aria-label="Markdown source"></textarea>
+  </section>
+
+  <section class="preview-pane" aria-labelledby="preview-heading">
+    <h2 id="preview-heading" class="pane-title">LaTeX preview</h2>
+    <div class="scroll-wrap">
+      <article id="sheet" class="sheet" aria-label="Rendered document preview"></article>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>PDF comes out of the browser print dialog (A4, LaTeX margins). KaTeX renders the math. Nothing is uploaded.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
