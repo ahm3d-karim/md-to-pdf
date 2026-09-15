@@ -291,7 +291,12 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 @media print {
   body { background: #ffffff; }
-  .topbar, .editor-pane, .foot { display: none !important; }
+  /* .pane-title is the preview pane's own "LaTeX preview" h2: print cannot hide
+     the pane (that is what is being printed), so hide the label itself */
+  .topbar, .editor-pane, .foot, .pane-title { display: none !important; }
+  /* KaTeX's MathML layer is screen-reader text; print it and the raw TeX source
+     from its <annotation> turns up on the page */
+  .katex-mathml { display: none !important; }
   .preview-pane { padding: 0; background: #ffffff; }
   .scroll-wrap { overflow: visible; border: none; padding: 0; background: #ffffff; }
   .sheet {

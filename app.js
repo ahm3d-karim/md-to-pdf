@@ -79,17 +79,75 @@
     renderTimer = setTimeout(render, 250);
   });
 
+  // ---- math protection -------------------------------------------------------
+  // marked runs CommonMark emphasis on the source BEFORE KaTeX auto-render ever
+  // sees it. A `_` inside math can pair with another `_` later in the same
+  // paragraph (S_{xy} ... r_{xy}), the emphasis split cuts the $...$ span in half,
+  // and auto-render then typesets only the balanced fragments while the rest
+  // prints as literal "$S_{xy}$" on the page. Park every math span behind a
+  // placeholder for the parse, then put the original TeX back as text nodes.
+  //
+  // Escaped dollars (\$  ->  a literal currency sign) are held back for one more
+  // step, because two of them in one paragraph are a pair of delimiters again as
+  // soon as they land in the DOM. They are committed AFTER KaTeX has run.
+  var MATH_MARK = "\uE000";
+  var ESCAPED_DOLLAR = MATH_MARK + "DOLLAR" + MATH_MARK;
+
+  function protectMath(raw) {
+    var store = [];
+    function stash(m) { store.push(m); return MATH_MARK + (store.length - 1) + MATH_MARK; }
+    var text = raw
+      .replace(/\\\$/g, function () { store.push(ESCAPED_DOLLAR); return MATH_MARK + (store.length - 1) + MATH_MARK; })
+      .replace(/\$\$([\s\S]+?)\$\$/g, stash)          // display math
+      .replace(/\\\[([\s\S]+?)\\\]/g, stash)          // \[ ... \] display math
+      .replace(/\$([^\n$]+?)\$/g, stash);             // inline math
+    return { text: text, store: store };
+  }
+
+  function restoreMath(root, store) {
+    if (!store.length) return;
+    var re = new RegExp(MATH_MARK + "(\\d+)" + MATH_MARK, "g");
+    walkTextNodes(root, MATH_MARK, function (parts) {
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < parts.length; i++) {
+        if (i % 2) frag.appendChild(document.createTextNode(store[Number(parts[i])] || ""));
+        else if (parts[i]) frag.appendChild(document.createTextNode(parts[i]));
+      }
+      return frag;
+    }, re);
+  }
+
+  function commitEscapedDollars(root) {
+    walkTextNodes(root, ESCAPED_DOLLAR, function (parts) {
+      return document.createTextNode(parts.join("$"));
+    });
+  }
+
+  function walkTextNodes(root, marker, rebuild, splitter) {
+    var re = splitter || new RegExp(marker, "g");
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var targets = [];
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue.indexOf(marker) !== -1) targets.push(walker.currentNode);
+    }
+    targets.forEach(function (node) {
+      node.parentNode.replaceChild(rebuild(node.nodeValue.split(re)), node);
+    });
+  }
+
   function render() {
     var raw = editor.value;
     var html;
+    var guarded = protectMath(raw);
     try {
-      html = marked.parse(raw);
+      html = marked.parse(guarded.text);
     } catch (e) {
       sheet.innerHTML = "<p><em>Markdown parse failed: " + e.message + "</em></p>";
       return;
     }
     html = DOMPurify.sanitize(html);
     sheet.innerHTML = html;
+    restoreMath(sheet, guarded.store);
     if (window.renderMathInElement) {
       try {
         renderMathInElement(sheet, {
@@ -103,6 +161,8 @@
         });
       } catch (e) { /* math rendering is best-effort */ }
     }
+    // only now can a literal currency sign be safe on the page
+    commitEscapedDollars(sheet);
   }
 
   // ---- actions ---------------------------------------------------------------

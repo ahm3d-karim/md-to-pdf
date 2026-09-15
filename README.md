@@ -9,7 +9,8 @@ Documents that need to look like a real paper (thesis drafts, problem sets, repo
 ## What it does
 
 - Renders Markdown with marked.js, sanitizes it with DOMPurify
-- Typesets math with KaTeX: `$...$` inline, `$$...$$` display
+- Typesets math with KaTeX: `$...$` inline, `$$...$$` display. Every math span is protected from the Markdown parser, so `_` and `*` inside a formula stay subscripts and multiplication
+- Write a currency sign as `\$` when you need one; a plain `$` is always a math delimiter
 - Styles the output like a LaTeX article: Computer Modern, auto-numbered sections (`1`, `1.1`), justified text
 - Download PDF: opens the browser print dialog, A4 with 25mm x 28mm margins, page breaks kept out of tables and code blocks
 - Download .tex: exports real LaTeX source (`\section`, `itemize`, `verbatim`, `tabular`, math passthrough) for local compilation
